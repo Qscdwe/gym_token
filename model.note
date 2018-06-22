@@ -1,0 +1,57 @@
+input
+	open price
+	high price
+	low price
+	close price
+	
+	day in week (=> as binance)
+	hour in day (=> as binance)
+
+	vol
+	quote_asset_vol => sec
+	base_asset_vol => first
+
+	trades
+	
+	base_wallet
+	quote_wallet
+
+train
+	32
+	32
+
+output
+	Discrete(3)
+	
+	
+train nhu the nao:
+	reset() => tick dau tien [...]
+	step(action)
+		reward cong don
+		reward la num ETH an duoc
+		
+		action 0:
+			sell
+			numETH++
+			numDLT--
+			reward = numETH-last_equivalent_ETH
+		action 1:
+			hold
+			reward = 0 (-0.001)
+		action 2:
+			buy
+			numETH-- => update last_equivalent_ETH
+			numDLT++ 
+			reward = 0 (-0.001)
+
+		tick() co the tick nhieu hon 1 lan
+		calculate done
+		calculate s'
+		return s', reward, done, {}
+
+	close
+	render
+
+Suc manh la 100%
+round lai fraction, vi coinbase khong cho mua fraction		
+		
