@@ -133,8 +133,9 @@ class TokenEnv(gym.Env):
 		self.tick+=1
 		s_ = self.get_state(self.tick)
 
-		self.debug_total_return_reward += reward
-		return s_, reward, done, {}
+		# Magnify reward
+		self.debug_total_return_reward += reward*10
+		return s_, reward*10, done, {}
 
 	def render(self, mode='human'):
 		pass
