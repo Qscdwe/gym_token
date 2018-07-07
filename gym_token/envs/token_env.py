@@ -14,7 +14,6 @@ import pandas as pd
 import datetime
 import pytz
 
-
 import pkg_resources
 
 
@@ -83,8 +82,11 @@ class TokenEnv(gym.Env):
 		self.base_wallet = base_wallet
 		self.quote_wallet = quote_wallet
 		self.last_quote_wallet = self.quote_wallet
-		print(f'Initialized with {base_wallet} Bcoin and {quote_wallet} Qcoin')
 		self.state = self.get_state(self.tick)
+
+		print('TokenEnv loaded.')
+		print(f'Initialized with {base_wallet} Bcoin and {quote_wallet} Qcoin')
+
 		return self.state
 
 	def step(self, action):
@@ -123,7 +125,7 @@ class TokenEnv(gym.Env):
 			done = True
 			print('DEBUG ACTION: ', self.debug_action_sequence[-10:])
 			print('DEBUG REWARD: ', self.debug_total_return_reward)
-			print('_^_end debug_^_')
+			print('==== end debug ====')
 			# print(f'ACcess {done}')
 
 		# print(f'tick {self.tick}, {done}')
@@ -133,13 +135,13 @@ class TokenEnv(gym.Env):
 		self.tick+=1
 		s_ = self.get_state(self.tick)
 
-		# Magnify reward
-		self.debug_total_return_reward += reward*10
-		return s_, reward*10, done, {}
+		# Magnify reward *= 1
+		self.debug_total_return_reward += reward
+		return s_, reward, done, {}
 
 	def render(self, mode='human'):
 		pass
 
 	def close(self):
-		if self.viewer: self.viewer.close()
-
+		# if self.viewer: self.viewer.close()
+		pass
