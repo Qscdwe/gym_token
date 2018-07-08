@@ -1,3 +1,4 @@
+README.md
 gym_token.egg-info/PKG-INFO
 gym_token.egg-info/SOURCES.txt
 gym_token.egg-info/dependency_links.txt
