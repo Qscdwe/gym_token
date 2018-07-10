@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 import datetime, pytz, pkg_resources, sys
 
+from baselines import logger
+
 sys.path.insert(0, '../libs')
 from ..libs.render_controller import Render_Controller
-
 
 class TokenEnvFragment(gym.Env):
 	def __init__(self):
@@ -87,24 +88,23 @@ class TokenEnvFragment(gym.Env):
 		self.last_quote_wallet = self.quote_wallet
 		self.state = self.get_state(self.tick)
 
-		print('TokenEnvFragment loaded.')
-		print(f'Reading file {self.csv_file}')
-		print(f'Data size {self.data_size}')
-		print(f'Num step will take this episode: {self.num_step}')
-		print(f'Range of initializing base wallet: [15, x ,30]')
-
+		logger.record_tabular('Simulating data file', self.csv_file)
+		logger.record_tabular('Num step',self.num_step)
+		logger.record_tabular('Range of initializing base wallet','15 -> 30')
 		
 		current_price = self.state[3]
 		costed_base_wallet = np.floor(self.base_wallet)
 		tmp_wallet = costed_base_wallet * current_price * 99.9/100
 		self.init_equivalent_quote_wallet = tmp_wallet
 
-		print(f'Initialized with {base_wallet} Bcoin and {quote_wallet} Qcoin')
-		print(f'At initializing time, {base_wallet} Bcoin equivalents {self.init_equivalent_quote_wallet} Qcoin')
+		# logger.record_tabular(f'Initialized with {base_wallet} Bcoin and {quote_wallet} Qcoin')
+		# logger.record_tabular(f'At initializing time, {base_wallet} Bcoin equivalents {self.init_equivalent_quote_wallet} Qcoin')
 
 		self.rc = None
 		self.last_action = 1
 		self.price_when_last_action = 0
+
+		# logger.dump_tabular()
 		return self.state
 
 
@@ -159,15 +159,14 @@ class TokenEnvFragment(gym.Env):
 		done = False
 		if self.tick - self.start_step + 1 >= self.num_step:
 			done = True
-			print('DEBUG ACTION: ', self.debug_action_sequence[-10:])
-			print('DEBUG REWARD: ', self.debug_total_return_reward)
-			print('DEBUG MAG_REWARD: ', self.MAG_REWARD)
+			logger.record_tabular('DEBUG ACTION ', self.debug_action_sequence[-10:])
+			logger.record_tabular('DEBUG REWARD ', self.debug_total_return_reward)
+			logger.record_tabular('DEBUG MAG_REWARD ', self.MAG_REWARD)
 			# Remember there are price fluctuation between the start tick and end tick
 			# So this is just a approximate function to estimate gained_Qcoin
-			print('DEBUG GAINED_QCOIN:', self.quote_wallet -  self.init_equivalent_quote_wallet)
-			print(f'DEBUG BCOIN LEFT: {self.base_wallet}')
-			print(f'DEBUG QCOIN LEFT: {self.quote_wallet}')
-			print('==== end of episode ====')
+			logger.record_tabular('DEBUG GAINED_QCOIN', self.quote_wallet -  self.init_equivalent_quote_wallet)
+			logger.record_tabular(f'DEBUG BCOIN LEFT',self.base_wallet)
+			logger.record_tabular(f'DEBUG QCOIN LEFT',self.quote_wallet)
 
 		self.tick+=1
 		s_ = self.get_state(self.tick)
@@ -185,4 +184,3 @@ class TokenEnvFragment(gym.Env):
 	def close(self):
 		if self.rc:
 			self.rc.close_window()
-
